@@ -1,3 +1,18 @@
+// Called to check when an end stop is reached and the switch opens
+// This allows the pin to go high
+void endStopCheck( void )
+{
+    if ( digitalRead( ENDSTOP ) == HIGH )
+    {
+        delay( 10 ); // debounce
+        if ( digitalRead( ENDSTOP ) == HIGH )
+        {
+            currentState = Stopping; 
+            setEnable( false );
+        }
+    }   
+}
+
 // Update the LCD display with the current table travel in mm/Sec
 void showFeedRate( void )
 {
@@ -53,7 +68,7 @@ void travelMillimeters( ULONG millimeters )
 // Step the motor by the number of steps passed in
 void doSteps( ULONG steps )
 {
-    Serial.println( travelRateDelay );
+ //   Serial.println( travelRateDelay );
     if ( enabledState == false )
         return;
     // The maximum delay with delayMicroseconds is 16384
@@ -83,7 +98,8 @@ void doSteps( ULONG steps )
 void doStep()
 {
     digitalWrite(STEP_PIN, HIGH);
-    ++pulseWidthDummy; // Waste one cycle
+    endStopCheck();
+    // ++pulseWidthDummy; // Waste one cycle
     digitalWrite(STEP_PIN, LOW); 
 }
 

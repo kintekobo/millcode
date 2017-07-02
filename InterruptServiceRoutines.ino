@@ -90,7 +90,7 @@ void buttonService()
     delay( 10 ); // Debounce
     
     short a = (PINB ^ 0x3F ); // Read the input pins for a button press
-    //Serial.println(a, HEX);
+    Serial.println(a, HEX);
  
     if  ( a == inputByte ) // Same key still pressed
     {
@@ -106,32 +106,32 @@ void buttonService()
             switch ( inputByte )
             {
                 case 0x01: // Switch button released
-                            currentState = ButtonPressed;
+                            
                             // Serial.println( "Switch released" );
                             break;
                 case 0x02: // Stop button released
                            // Serial.println( "Stop released" );
-                            currentState = Stopping;
+                            // currentState = Stopping;
                            break;
                  case 0x04: // Fast left button released
-                            currentState = Stopping;
+                           // currentState = Stopping;
                            break;
                 case 0x08: // Slow left button released
-                            currentState = Stopping;
+                           // currentState = Stopping;
                            break;
                 case 0x10: // Slow right button released
-                           currentState = Stopping;
+                           // currentState = Stopping;
                             break;
                 case 0x20: // Fast left button released
-                            currentState = Stopping;
+                            // currentState = Stopping;
                            break;
                 default:    // More than one button released
                             // Serial.println( inputByte, HEX );
-                            currentState = Stopping;
+                            // currentState = Stopping;
                            break;               
             }  
-            shouldBeStepping = false;
-            inputByte = 0;          
+            // shouldBeStepping = false;
+            // inputByte = 0;          
             inService = false;
             return;   
         }
@@ -141,9 +141,12 @@ void buttonService()
         switch ( a )
         {
             case 0x01: // Switch button pressed
-                        break;
+                        currentState = ButtonPressed;
+                        inService = false;
+                        return;
             case 0x02: // Stop button pressed
                        currentState = Stopping;
+                       setEnable( false );
                        break;
              case 0x04: // Fast left button pressed
                        if ( currentState == Idle )
