@@ -66,6 +66,7 @@ const int  lcd_address=027;   // I2C Address of LCD backpack
 
 volatile ULONG travelRateDelay = 100L;
 volatile ULONG slowRateAdjust = 0;
+volatile bool rotaryButtonPressed = false;
 
 enum rotationDirection {NONE, CW, CCW };
 rotationDirection directionState = NONE;
@@ -74,6 +75,9 @@ bool enabledState = true; // Will be set to false on startup
 volatile int pulseWidthDummy = 0; // Used as a means of wasting a very short pime for the step pulse width
 bool shouldBeStepping = false; // Set to true when one of the buttons is requesting traverse
 volatile bool feedRateChanged = true; // Set to true when the feed rate knob is turned
+
+
+//#define SERIAL
 
 // This code is executed once at power up
 void setup()
@@ -123,14 +127,14 @@ void setup()
 void loop( void )
 {
     // Has the button pressed flag been set?
-    if ( currentState == ButtonPressed ) 
+    if ( rotaryButtonPressed == true ) 
     {
-        currentState = Idle;
+        Serial.println("bp");
+        rotaryButtonPressed = false;
         slowRateAdjust = 0;
         feedRateChanged = true;
     }
-    
-    // Global flag set when rotary dial is turned
+  // Global flag set when rotary dial is turned
     if ( feedRateChanged == true )
     {
         showFeedRate();
@@ -140,7 +144,8 @@ void loop( void )
     // Global flag set when one of the move table buttons is pressed
     if ( shouldBeStepping ) 
     {
-#ifdef SERIAL Serial.print("Should be stepping"); 
+#ifdef SERIAL 
+Serial.print("Should be stepping"); 
 #endif
         setEnable( true );
         while ( currentState != Idle )
@@ -160,6 +165,13 @@ void doCommand( )
     
     endStopCheck();
     
+    // Global flag set when rotary dial is turned
+    if ( feedRateChanged == true )
+    {
+        showFeedRate();
+        feedRateChanged = false;
+    }
+   
     // We need to process the stop state as quickly as possible
     if ( currentState == Stopping )
     {

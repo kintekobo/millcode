@@ -3,9 +3,8 @@
  *  knob. We must be very careful what we do in here as interrupt routines block. We communicate with
  *  the main code by means of flags.
  */
-
+ 
 // Interrupt called when the rotary switch is turned
-// Each rotation step creates three bytes 123 anti-clockwise and 213 clockwise
 void rotarySwitchService( void )
 {
     static bool inService = false;
@@ -14,13 +13,8 @@ void rotarySwitchService( void )
     static ULONG ttime = MAX_ULONG ;
     static byte buff[ 3 ] = { 0 };
     static ULONG lbuff = 0;
-    
-    if ( inService == true ) // Ensure we dont get called  again while servicing. Shouldn't happen but I've been caught before!
-        return;
-    else
-        inService = true; 
-         
-    if (( millis() - ttime )  > 100 ) // Helps to detect stray pulses by invalidating the buffer after a timeout
+
+   if (( millis() - ttime )  > 100 ) // Helps to detect stray pulses by invalidating the buffer after a timeout
         inputByte = 0;
         
     delay( 30 ); // Debounce
@@ -31,7 +25,7 @@ void rotarySwitchService( void )
         inService = false;
         return;
     }
-    
+    Serial.print( buff[0], HEX );Serial.print( buff[0], HEX );Serial.println( buff[0], HEX );
     switch( inputByte ) 
     {
         case 0: // First pulse
@@ -49,6 +43,8 @@ void rotarySwitchService( void )
            ttime = millis(); // Reset the time
            if (( buff[ 0 ] == 0x01 ) && (buff[ 1 ] == 0x02 ) && ( buff[ 2 ] == 0x03 ))
            {
+                Serial.println("1");
+
                 if ( slowRateAdjust <= ( SLOWRATEMAXIMUM - SLOWRATEINCREMENT) )
                 {
                     slowRateAdjust += SLOWRATEINCREMENT;
@@ -59,6 +55,8 @@ void rotarySwitchService( void )
            else 
            if (( buff[ 0 ] == 0x02 ) && (buff[ 1 ] == 0x01 ) && ( buff[ 2 ] == 0x03 ))
            {
+                Serial.println("2");
+
                 if ( slowRateAdjust >= SLOWRATEINCREMENT )
                 {
                     slowRateAdjust -= SLOWRATEINCREMENT;   
@@ -67,6 +65,8 @@ void rotarySwitchService( void )
            }               
            else // Out of sync
            {
+                Serial.println("3");
+
                 inService = false;
                return;
            }
@@ -105,8 +105,7 @@ void buttonService()
         {  
             switch ( inputByte )
             {
-                case 0x01: // Switch button released
-                            
+                case 0x01: // Switch button released                           
                             // Serial.println( "Switch released" );
                             break;
                 case 0x02: // Stop button released
@@ -141,7 +140,7 @@ void buttonService()
         switch ( a )
         {
             case 0x01: // Switch button pressed
-                        currentState = ButtonPressed;
+                        rotaryButtonPressed = true;
                         inService = false;
                         return;
             case 0x02: // Stop button pressed

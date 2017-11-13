@@ -1,3 +1,7 @@
+// Each rotation step creates three bytes 123 anti-clockwise and 213 clockwise
+
+
+
 // Called to check when an end stop is reached and the switch opens
 // This allows the pin to go high
 void endStopCheck( void )
