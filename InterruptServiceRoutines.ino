@@ -3,7 +3,9 @@
  *  knob. We must be very careful what we do in here as interrupt routines block. We communicate with
  *  the main code by means of flags.
  */
- 
+
+ // Change added to force GIT to commit
+
 // Interrupt called when the rotary switch is turned
 void rotarySwitchService( void )
 {

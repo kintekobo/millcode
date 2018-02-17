@@ -7,6 +7,7 @@
         Step pulse, Direction state and Enable state to control the M542T
 
 */
+// Change added to force GIT to commit
 
 #include <Wire.h> // Only needed if using the LCD
 #include <LiquidCrystal_I2C.h> // Only needed if using the LCD

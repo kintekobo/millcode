@@ -1,6 +1,6 @@
 // Each rotation step creates three bytes 123 anti-clockwise and 213 clockwise
 
-
+// Change added to force GIT to commit
 
 // Called to check when an end stop is reached and the switch opens
 // This allows the pin to go high
